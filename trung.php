@@ -1,1 +1,1 @@
-   <?php echo 'Xin chào Ktrung'; ?>
+   <?php echo 'Xin chào Ktrungg'; ?>
