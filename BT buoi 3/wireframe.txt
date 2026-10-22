@@ -17,6 +17,6 @@ DỰ ÁN: WEBSITE TIN TỨC / BLOG CÓ TRANG QUẢN TRỊ
 |                          [____________________________________] |
 |  [Ảnh đại diện]        : [ Choose File ] No file chosen         |
 |                                                                 |
-|                 [ BUTTON: ĐĂNG KÝ TÀI KHOẢN ADMIN ]             |
+|                 [ BUTTON: ĐĂNG KÝ TK ADMIN ]             |
 |                                                                 |
 +-----------------------------------------------------------------+
