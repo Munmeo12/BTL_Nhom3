@@ -1,6 +1,5 @@
 # BÀI TẬP LỚN MÔN LẬP TRÌNH WEB - NHÓM 3
 ## ĐỀ TÀI: XÂY DỰNG WEBSITE TIN TỨC / BLOG CÓ TRANG QUẢN TRỊ (ADMIN PORTAL)
-
 ---
 
 ## 1. Danh sách thành viên và phân công công việc:
