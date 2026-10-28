@@ -3,13 +3,14 @@
 function db(): PDO {
     static $pdo = null;
     if ($pdo === null) {
-        $host     = '127.0.0.1;port=3307'; // Cổng 3307 chuẩn XAMPP của bạn
-        $dbname   = 'news_blog_db';
+        $host     = '127.0.0.1';
+        $port     = '3307'; // Tách riêng port chuẩn DSN
+        $dbname   = 'news_blog_db_new';
         $username = 'root';
         $password = '';
         $charset  = 'utf8mb4';
 
-        $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
+        $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=$charset";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

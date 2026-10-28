@@ -3,71 +3,74 @@
 require_once 'repositories/PostRepository.php';
 require_once 'repositories/CategoryRepository.php';
 
-$editPost = null;
-if (isset($_GET['edit_id'])) {
-    $editPost = findPostById((int)$_GET['edit_id']);
-}
+// Lấy danh sách chuyên mục cho dropdown
+$categories = findAllCategories();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    if ($action === 'save') {
-        $id = !empty($_POST['id']) ? (int)$_POST['id'] : null;
-        savePost($_POST, $id);
-    } elseif ($action === 'delete') {
-        deletePost((int)$_POST['id']);
-    }
+// Xử lý xóa bài viết
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    deletePost((int)$_GET['id']);
     header('Location: admin_posts.php');
     exit;
 }
 
-$posts = findAllPostsAdmin();
-$categories = findAllCategories();
+// Lấy danh sách tất cả bài viết
+$posts = findAllPosts();
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Bài viết</title>
-    <style>table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 8px; }</style>
+    <title>Quản lý Bài viết - BTL Nhóm 3</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #1e293b; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        h1 { color: #4f46e5; margin-bottom: 15px; }
+        a.btn-back { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #64748b; font-weight: 600; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px 15px; border: 1px solid #e2e8f0; text-align: left; }
+        th { background: #f1f5f9; color: #334155; }
+        .badge { background: #e0e7ff; color: #4f46e5; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+        .btn-delete { color: #ef4444; text-decoration: none; font-weight: 600; }
+        .btn-delete:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
-    <h2>📝 QUẢN LÝ BÀI VIẾT (CRUD)</h2>
-    <a href="index.php">← Về Trang chủ</a><br><br>
+    <div class="container">
+        <a href="index.php" class="btn-back">← Quay lại Trang chủ</a>
+        <h1>📝 QUẢN LÝ BÀI VIẾT</h1>
 
-    <h3><?= $editPost ? 'Sửa Bài Viết' : 'Tạo Bài Viết Mới' ?></h3>
-    <form method="POST">
-        <input type="hidden" name="action" value="save">
-        <?php if ($editPost): ?>
-            <input type="hidden" name="id" value="<?= $editPost['id'] ?>">
-        <?php endif; ?>
-        Chuyên mục: 
-        <select name="category_id" required>
-            <?php foreach ($categories as $c): ?>
-                <option value="<?= $c['id'] ?>" <?= ($editPost && $editPost['category_id'] == $c['id']) ? 'selected' : '' ?>><?= htmlspecialchars($c['name']) ?></option>
-            <?php endforeach; ?>
-        </select><br><br>
-        Tiêu đề: <input type="text" name="title" value="<?= htmlspecialchars($editPost['title'] ?? '') ?>" required size="50"><br><br>
-        Slug (URL): <input type="text" name="slug" value="<?= htmlspecialchars($editPost['slug'] ?? '') ?>" required size="50"><br><br>
-        Tóm tắt: <br><textarea name="summary" cols="60" rows="3"><?= htmlspecialchars($editPost['summary'] ?? '') ?></textarea><br><br>
-        Nội dung: <br><textarea name="content" cols="60" rows="6"><?= htmlspecialchars($editPost['content'] ?? '') ?></textarea><br><br>
-        Trạng thái: 
-        <select name="status">
-            <option value="draft" <?= ($editPost && $editPost['status'] == 'draft') ? 'selected' : '' ?>>Bản nháp</option>
-            <option value="published" <?= ($editPost && $editPost['status'] == 'published') ? 'selected' : '' ?>>Xuất bản</option>
-        </select><br><br>
-        <button type="submit">Lưu Bài Viết</button>
-    </form>
-    <hr>
-
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Tiêu đề</th>
-            <th>Chuyên mục</th>
-            <th>Trạng thái</th>
-            <th>Hành động</th>
-        </tr>
-        <?php foreach ($posts as $p): ?>
-        <tr>
-            <td><?= $p['id'] ?></td>
-            <td><?= htmlspecialchars($p['title']) ?></td>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tiêu đề</th>
+                    <th>Chuyên mục</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày đăng</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($posts)): ?>
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #94a3b8;">Chưa có bài viết nào.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($posts as $p): ?>
+                        <tr>
+                            <td><?= $p['id'] ?></td>
+                            <td><strong><?= htmlspecialchars($p['title']) ?></strong></td>
+                            <td><span class="badge"><?= htmlspecialchars($p['category_name'] ?? 'Chưa phân loại') ?></span></td>
+                            <td><?= htmlspecialchars($p['status']) ?></td>
+                            <td><?= htmlspecialchars($p['created_at']) ?></td>
+                            <td>
+                                <a href="admin_posts.php?action=delete&id=<?= $p['id'] ?>" class="btn-delete" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">Xóa</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
